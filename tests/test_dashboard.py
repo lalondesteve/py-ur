@@ -1,8 +1,10 @@
+import asyncio
+from typing import assert_type
 import pytest
 
 from dashboard import get_ursim_ip
 from dashboard.datatypes import DashboardMessages
-from dashboard.dashboard import check_connection, send_message, send_batch_messages
+from dashboard.dashboard import connect, send_message, send_batch_messages
 
 
 ip = get_ursim_ip()
@@ -10,12 +12,19 @@ ip = get_ursim_ip()
 
 @pytest.mark.asyncio
 async def test_connection():
-    r = await check_connection(ip)
-    assert r.split(b":")[0] == b"Connected"
+    async for r, w in connect(ip):
+        assert_type(r, asyncio.StreamReader)
+        assert w.is_closing() is False
+    with pytest.raises(asyncio.TimeoutError):
+        async for _ in connect("6.6.6.6"):
+            pass
+    with pytest.raises(ConnectionRefusedError):
+        async for _ in connect("127.0.0.1"):
+            pass
 
 
 @pytest.mark.asyncio
-async def test_communication():
+async def test_message():
     r = await send_message(ip, DashboardMessages.robot_mode)
     assert r.split(b":")[0] == b"Robotmode"
 
