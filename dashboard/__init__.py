@@ -1,13 +1,10 @@
-import asyncio
-from .dashboard_robot import check_connection, send_message
-from .datatypes import DashboardMessages
+import yaml
 
 
-if __name__ == "__main__":
-
-    async def run():
-        ip = "lals-t1.netbird.cloud"
-        print(await check_connection(ip))
-        print(await send_message(ip, DashboardMessages.robot_mode))
-
-    asyncio.run(run())
+def get_ursim_ip():
+    try:
+        with open("config.yaml", "r") as f:
+            conf = yaml.safe_load(f)
+    except Exception:
+        return "100.82.150.95"
+    return conf["ursim_ip"]

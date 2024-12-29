@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from dashboard import DashboardMessages
+from dashboard import get_ursim_ip
+from .datatypes import DashboardMessages
 
 logger = logging.getLogger(__name__)
 PORT = 29999
@@ -19,11 +20,13 @@ async def check_connection(ip):
 
 async def send_message(ip: str, message: DashboardMessages, value: str = ""):
     w = None
+    _end = b"\r\n"
+    _value = (" " + value + " ").encode() if value else b""
     try:
         r, w = await asyncio.wait_for(asyncio.open_connection(ip, PORT), 2)
         buf = await r.read(1024)
         if b"Connected" in buf:
-            w.write(message.encode() + b" " + value.encode() + b"\r\n")
+            w.write(message.encode() + _value + _end)
             buf = await r.read(1024)
         else:
             raise ConnectionError
@@ -36,7 +39,7 @@ async def send_message(ip: str, message: DashboardMessages, value: str = ""):
 if __name__ == "__main__":
 
     async def run():
-        ip = "lals-t1.netbird.cloud"
+        ip = get_ursim_ip()
         print(await check_connection(ip))
         print(await send_message(ip, DashboardMessages.robot_mode))
 

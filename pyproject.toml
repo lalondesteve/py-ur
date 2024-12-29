@@ -1,10 +1,9 @@
 [project]
 name = "py-ur"
 version = "0.1.0"
-description = "Add your description here"
+description = "Python app to communicate with Universal Robot (tested with UR3, UR5)"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["pyyaml>=6.0.2"]
 
 [tool.uv.workspace]
-members = ["dashboard"]
