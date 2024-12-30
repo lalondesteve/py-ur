@@ -47,7 +47,7 @@ async def send_batch_messages(ip: str, messages: list[DashboardMessages]):
 if __name__ == "__main__":
 
     async def run():
-        from dashboard import get_ursim_ip
+        from utils import get_ursim_ip
 
         ip = get_ursim_ip()
         print(await send_message(ip, DashboardMessages.get_loaded_program))

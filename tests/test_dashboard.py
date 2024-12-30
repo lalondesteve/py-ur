@@ -2,7 +2,7 @@ import asyncio
 from typing import assert_type
 import pytest
 
-from dashboard import get_ursim_ip
+from utils import get_ursim_ip
 from dashboard.datatypes import DashboardMessages
 from dashboard.dashboard import connect, send_message, send_batch_messages
 
