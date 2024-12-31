@@ -1,16 +1,29 @@
 import asyncio
 import logging
+from dataclasses import dataclass
 
-from .datatypes import Action, Register
+from .datatypes import Action, StatusRegister
 
 logger = logging.getLogger(__name__)
 PORT = 502
+
+
+@dataclass
+class RegisterValue:
+    name: str
+    value: int
 
 
 def parse_modbus_response(message: bytes) -> list[int]:
     data = [message[i : i + 2] for i in range(0, len(message), 2)]
     int_data = [int.from_bytes(i) for i in data]
     return int_data
+
+
+def resolve_register(modbus_response: list[int]) -> RegisterValue:
+    return RegisterValue(
+        name=StatusRegister(modbus_response[0]).name, value=modbus_response[-1]
+    )
 
 
 def build_modbus_message(register: int | tuple, value: int | None = None) -> bytes:
@@ -63,9 +76,7 @@ async def send_batch_messages(ip: str, messages: list[bytes]) -> list[list[int]]
     return responses
 
 
-async def build_and_send_messages(
-    ip: str, messages: list[Register | tuple[Register, int]]
-) -> list[list[int]]:
+async def build_and_send_messages(ip: str, messages: list) -> list[list[int]]:
     built_messages = []
     for m in messages:
         if isinstance(m, tuple):

@@ -3,9 +3,8 @@ from typing import assert_type
 import pytest
 
 from utils import get_ursim_ip
-from dashboard.datatypes import DashboardMessages
+from dashboard.datatypes import DashboardStatusMessages
 from dashboard.dashboard import connect, send_message, send_batch_messages
-
 
 ip = get_ursim_ip()
 
@@ -25,16 +24,16 @@ async def test_connection():
 
 @pytest.mark.asyncio
 async def test_message():
-    r = await send_message(ip, DashboardMessages.robot_mode)
+    r = await send_message(ip, DashboardStatusMessages.robot_mode)
     assert r.split(b":")[0] == b"Robotmode"
 
 
 @pytest.mark.asyncio
 async def test_batch_messages():
     messages = [
-        DashboardMessages.robot_mode,
-        DashboardMessages.is_program_saved,
-        DashboardMessages.running,
+        DashboardStatusMessages.robot_mode,
+        DashboardStatusMessages.is_program_saved,
+        DashboardStatusMessages.running,
     ]
     r = await send_batch_messages(ip, messages)
     assert isinstance(r, list)

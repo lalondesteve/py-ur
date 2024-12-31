@@ -18,10 +18,9 @@ class StatusRegister(IntEnum):
     safetyMode = 266
 
 
-GeneralPurposeRegister = IntEnum(
-    "GeneralPurposeRegister",
-    {f"register_{i}": i for i in range(128, 255)},
-)  # pyright: ignore
+register_dict = {f"register_{i}": i for i in range(128, 255)}
+
+GeneralPurposeRegister = IntEnum("GeneralPurposeRegister", register_dict)  # pyright: ignore
 
 
 class Register(Protocol):
