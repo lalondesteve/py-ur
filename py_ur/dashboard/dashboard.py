@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from dashboard.datatypes import DashboardStatusMessages, DashboardActionMessages
+from .datatypes import DashboardStatusMessages, DashboardActionMessages
 
 logger = logging.getLogger(__name__)
 PORT = 29999
@@ -47,31 +47,3 @@ async def send_batch_messages(ip: str, messages: list):
             response = await r.read(1024)
             responses.append((message, response.strip()))
     return responses
-
-
-if __name__ == "__main__":
-
-    async def run():
-        from utils import get_ursim_ip
-        from .datatypes import DashboardStatusMessages
-
-        ip = get_ursim_ip()
-        print(await send_message(ip, DashboardStatusMessages.get_loaded_program))
-        messages = [
-            DashboardStatusMessages.get_loaded_program,
-            DashboardStatusMessages.robot_mode,
-            DashboardStatusMessages.is_program_saved,
-            DashboardStatusMessages.running,
-            DashboardStatusMessages.safety_status,
-        ]
-        from pprint import pprint
-
-        #
-        pprint(
-            await send_batch_messages(
-                ip,
-                [m for m in messages],
-            )
-        )
-
-    asyncio.run(run())

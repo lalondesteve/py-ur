@@ -1,13 +1,13 @@
 import asyncio
 from typing import Callable
 
-import dashboard
-from dashboard import DashboardActionMessages, DashboardStatusMessages
-import modbus
+from . import dashboard
+from .dashboard import DashboardActionMessages, DashboardStatusMessages
+from . import modbus
 import logging
 import json
 
-from utils import get_ursim_ip
+from .utils import get_ursim_ip
 
 logger = logging.getLogger(__name__)
 

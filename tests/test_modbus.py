@@ -3,8 +3,8 @@ from typing import assert_type
 import pytest
 import asyncio
 
-from utils import get_ursim_ip
-import modbus
+from py_ur.utils import get_ursim_ip
+from py_ur import modbus
 
 ip = get_ursim_ip()
 

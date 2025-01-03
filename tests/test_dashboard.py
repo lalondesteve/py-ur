@@ -2,9 +2,9 @@ import asyncio
 from typing import assert_type
 import pytest
 
-from utils import get_ursim_ip
-from dashboard.datatypes import DashboardStatusMessages
-from dashboard.dashboard import connect, send_message, send_batch_messages
+from py_ur.utils import get_ursim_ip
+from py_ur.dashboard.datatypes import DashboardStatusMessages
+from py_ur.dashboard.dashboard import connect, send_message, send_batch_messages
 
 ip = get_ursim_ip()
 

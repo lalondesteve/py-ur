@@ -2,7 +2,7 @@ import asyncio
 import logging
 import struct
 from typing import Sequence
-from utils import get_ursim_ip
+from ..utils import get_ursim_ip
 from .datatypes import Action, RegisterEnum, RegisterValue
 
 logger = logging.getLogger(__name__)
@@ -88,11 +88,3 @@ async def build_and_send_messages(
             b = build_modbus_message(m.value)
         built_messages.append(b)
     return await send_batch_messages(ip=ip, messages=built_messages)
-
-
-if __name__ == "__main__":
-    # from utils import get_ursim_ip
-
-    async def run(): ...
-
-    asyncio.run(run())

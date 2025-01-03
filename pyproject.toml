@@ -1,5 +1,5 @@
 [project]
-name = "py-ur"
+name = "py_ur"
 version = "0.1.0a"
 description = "Python app to communicate with Universal Robot (tested with UR3, UR5)"
 readme = "README.md"
