@@ -1,20 +1,18 @@
-from .datatypes import StatusRegister, GeneralPurposeRegister
+from .datatypes import RegisterEnum, RegisterValue
 from .modbus import (
     connect,
     send_message,
     send_batch_messages,
     build_and_send_messages,
-    resolve_register,
     build_modbus_message,
 )
 
 __all__ = [
-    "StatusRegister",
-    "GeneralPurposeRegister",
+    "RegisterEnum",
+    "RegisterValue",
     "connect",
     "send_message",
     "send_batch_messages",
     "build_and_send_messages",
-    "resolve_register",
     "build_modbus_message",
 ]

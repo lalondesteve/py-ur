@@ -1,4 +1,3 @@
-# pyright:reportAttributeAccessIssue=none
 import random
 from typing import assert_type
 import pytest
@@ -25,65 +24,65 @@ async def test_connection():
 
 @pytest.mark.asyncio
 async def test_message():
-    message = modbus.build_modbus_message(modbus.StatusRegister.isPowerOnRobot)
+    message = modbus.build_modbus_message(modbus.RegisterEnum.isPowerOnRobot)
     r = await modbus.send_message(ip, message)
-    assert r[0] == modbus.StatusRegister.isPowerOnRobot
-    assert r[-1] in (0, 1)
+    assert r is not None
+    assert r.register == modbus.RegisterEnum.isPowerOnRobot
+    assert r.value in (0, 1)
 
 
 @pytest.mark.asyncio
-async def test_wrtie_message():
+async def test_write_message():
     value = random.randint(0, 255)
 
     message = modbus.build_modbus_message(
-        modbus.GeneralPurposeRegister.register_128, value
+        modbus.RegisterEnum.register_128, value
     )
     r = await modbus.send_message(ip, message)
-    assert r[0] == modbus.GeneralPurposeRegister.register_128
-    assert r[-1] == value
+    assert r is not None
+    assert r.register == modbus.RegisterEnum.register_128
+    assert r.value == value
 
 
 @pytest.mark.asyncio
 async def test_batch_messages():
-    value = random.randint(0, 255)
+    value = random.randint(0, 65535)
 
     messages = [
-        modbus.StatusRegister.isPowerOnRobot,
-        modbus.StatusRegister.safetyMode,
-        (modbus.GeneralPurposeRegister.register_128, value),
+        modbus.RegisterEnum.isPowerOnRobot,
+        modbus.RegisterEnum.safetyMode,
+        (modbus.RegisterEnum.register_128, value),
     ]
     messages_bytes = [modbus.build_modbus_message(m) for m in messages]
     r = await modbus.send_batch_messages(ip, messages_bytes)
     assert isinstance(r, list)
-    assert isinstance(r[0], list)
-    assert r[-1][-1] == value
+    assert isinstance(r[0], modbus.RegisterValue)
+    assert r[-1].value == value
 
 
 @pytest.mark.asyncio
 async def test_build_and_send():
-    value = random.randint(0, 255)
+    value = random.randint(0, 65535)
     messages = [
-        modbus.StatusRegister.isPowerOnRobot,
-        modbus.StatusRegister.safetyMode,
-        (modbus.GeneralPurposeRegister.register_128, value),
+        modbus.RegisterEnum.isPowerOnRobot,
+        modbus.RegisterEnum.safetyMode,
+        (modbus.RegisterEnum.register_128, value),
     ]
     r = await modbus.build_and_send_messages(ip, messages)
     assert isinstance(r, list)
-    assert isinstance(r[0], list)
-    assert r[-1][-1] == value
+    assert isinstance(r[0], modbus.RegisterValue)
+    assert r[-1].value == value
 
 
 @pytest.mark.asyncio
 async def test_build_send_and_parse():
     messages = [
-        modbus.StatusRegister.isPowerOnRobot,
-        modbus.StatusRegister.isEmergencyStopped,
+        modbus.RegisterEnum.isPowerOnRobot,
+        modbus.RegisterEnum.isEmergencyStopped,
     ]
-    responses = [
-        modbus.resolve_register(r)
-        for r in await modbus.build_and_send_messages(ip, messages)
-    ]
-    assert responses[0].name == "isPowerOnRobot"
+    responses = await modbus.build_and_send_messages(ip, messages)
+    print("Responses", responses)
+    assert responses[0].register == modbus.RegisterEnum.isPowerOnRobot
     assert responses[0].value in (0, 1)
-    assert responses[1].name == "isEmergencyStopped"
+    assert responses[1].register == modbus.RegisterEnum.isEmergencyStopped
     assert responses[1].value in (0, 1)

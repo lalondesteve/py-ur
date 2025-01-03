@@ -1,30 +1,35 @@
 import asyncio
 import logging
-from .datatypes import Action, GeneralPurposeRegister, StatusRegister, RegisterValue
+import struct
+from typing import Sequence
+
+from .datatypes import Action, RegisterEnum, RegisterValue
 
 logger = logging.getLogger(__name__)
 PORT = 502
 
 
-def parse_modbus_response(message: bytes) -> list[int]:
-    data = [message[i: i + 2] for i in range(0, len(message), 2)]
-    int_data = [int.from_bytes(i) for i in data]
-    return int_data
-
-
-def resolve_register(modbus_response: list[int]) -> RegisterValue:
-    return RegisterValue(
-        name=StatusRegister(modbus_response[0]).name, value=modbus_response[-1]
-    )
+def parse_modbus_response(message: bytes) -> RegisterValue:
+    addr: int = -1
+    value: int = -1
+    if len(message) == 9:
+        addr, _, _, _, value = struct.unpack("!HHHBH", message)
+    elif len(message) == 11:
+        addr, _, _, _, _, value = struct.unpack("!HHHBHH", message)
+    elif len(message) == 12:
+        addr, _, _, _, _, _, value = struct.unpack("!HHHBBHH", message)
+    else:
+        logger.warning(f"Unexpected message length: {len(message)} {message}")
+    return RegisterValue(register=RegisterEnum(addr), value=value)
 
 
 def build_modbus_message(register: int | tuple, value: int | None = None) -> bytes:
     if isinstance(register, tuple):
         register, value = register
-    _id = register
+    _id = register  # transaction id - repeated in answer
     _protocol = 0
-    _len = 6
-    _action = Action.WRITE if value else Action.READ
+    _len = 6  # length of message
+    _action = Action.WRITE if value else Action.READ  # Function code
     return b"".join(
         x.to_bytes(2, byteorder="big")
         for x in [_id, _protocol, _len, _action, register, value if value else 1]
@@ -39,8 +44,8 @@ async def connect(ip: str):
         w.write(build_modbus_message(register=666))
         await w.drain()
         response = await r.read(1024)
-        data = parse_modbus_response(response)
-        if data[0] != 666:
+        register = parse_modbus_response(response)
+        if register.register.value != 666:
             raise ConnectionError
         yield r, w
     finally:
@@ -49,8 +54,8 @@ async def connect(ip: str):
             await w.wait_closed()
 
 
-async def send_message(ip: str, message: bytes) -> list[int]:
-    response: list[int] = []
+async def send_message(ip: str, message: bytes) -> RegisterValue | None:
+    response = None
     async for r, w in connect(ip):
         w.write(message)
         await w.drain()
@@ -58,8 +63,8 @@ async def send_message(ip: str, message: bytes) -> list[int]:
     return response
 
 
-async def send_batch_messages(ip: str, messages: list[bytes]) -> list[list[int]]:
-    responses: list[list[int]] = []
+async def send_batch_messages(ip: str, messages: list[bytes]) -> list[RegisterValue]:
+    responses: list[RegisterValue] = []
     async for r, w in connect(ip):
         for m in messages:
             w.write(m)
@@ -70,17 +75,13 @@ async def send_batch_messages(ip: str, messages: list[bytes]) -> list[list[int]]
 
 async def build_and_send_messages(
         ip: str,
-        messages: list[
-            StatusRegister
-            | GeneralPurposeRegister
-            | tuple[StatusRegister | GeneralPurposeRegister, int]
-            ],
-) -> list[list[int]]:
+        messages: Sequence[RegisterEnum | tuple[RegisterEnum, int]],
+) -> list[RegisterValue]:
     built_messages = []
     for m in messages:
         if isinstance(m, tuple):
-            register, value = m
-            b = build_modbus_message(register=register.value, value=value)
+            register_value, value = m
+            b = build_modbus_message(register=register_value.value, value=value)
         else:
             b = build_modbus_message(m.value)
         built_messages.append(b)
