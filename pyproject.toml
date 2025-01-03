@@ -10,11 +10,15 @@ dependencies = ["pyyaml>=6.0.2"]
 venvPath = "."
 venv = ".venv"
 
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto"
+
 [dependency-groups]
 dev = [
-    "neovim>=0.3.1",
-    "pre-commit>=4.0.1",
-    "pytest>=8.3.4",
-    "pytest-asyncio>=0.25.0",
-    "ruff>=0.8.4",
+  "neovim>=0.3.1",
+  "pre-commit>=4.0.1",
+  "pytest>=8.3.4",
+  "pytest-asyncio>=0.25.0",
+  "ruff>=0.8.4",
 ]
