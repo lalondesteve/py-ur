@@ -2,11 +2,12 @@ import asyncio
 import logging
 import struct
 from typing import Sequence
-
+from utils import get_ursim_ip
 from .datatypes import Action, RegisterEnum, RegisterValue
 
 logger = logging.getLogger(__name__)
 PORT = 502
+IP = get_ursim_ip()
 
 
 def parse_modbus_response(message: bytes) -> RegisterValue:
@@ -36,7 +37,7 @@ def build_modbus_message(register: int | tuple, value: int | None = None) -> byt
     )
 
 
-async def connect(ip: str):
+async def connect(ip: str = IP):
     w = None
     try:
         r, w = await asyncio.wait_for(asyncio.open_connection(ip, PORT), 2)
@@ -54,7 +55,7 @@ async def connect(ip: str):
             await w.wait_closed()
 
 
-async def send_message(ip: str, message: bytes) -> RegisterValue | None:
+async def send_message(message: bytes, ip: str = IP) -> RegisterValue | None:
     response = None
     async for r, w in connect(ip):
         w.write(message)
@@ -63,7 +64,9 @@ async def send_message(ip: str, message: bytes) -> RegisterValue | None:
     return response
 
 
-async def send_batch_messages(ip: str, messages: list[bytes]) -> list[RegisterValue]:
+async def send_batch_messages(
+    messages: list[bytes], ip: str = IP
+) -> list[RegisterValue]:
     responses: list[RegisterValue] = []
     async for r, w in connect(ip):
         for m in messages:
@@ -74,8 +77,7 @@ async def send_batch_messages(ip: str, messages: list[bytes]) -> list[RegisterVa
 
 
 async def build_and_send_messages(
-        ip: str,
-        messages: Sequence[RegisterEnum | tuple[RegisterEnum, int]],
+    messages: Sequence[RegisterEnum | tuple[RegisterEnum, int]], ip: str = IP
 ) -> list[RegisterValue]:
     built_messages = []
     for m in messages:
@@ -85,21 +87,12 @@ async def build_and_send_messages(
         else:
             b = build_modbus_message(m.value)
         built_messages.append(b)
-    return await send_batch_messages(ip, built_messages)
+    return await send_batch_messages(ip=ip, messages=built_messages)
 
 
 if __name__ == "__main__":
     # from utils import get_ursim_ip
 
-    async def run():
-        ...
-        # ip = get_ursim_ip()
-        # messages = [
-        #     StatusRegister.isPowerOnRobot,
-        #     (GeneralPurposeRegister.register_128, 124),
-        # ]
-        # responses = await build_and_send_messages(ip, messages)
-        # print(responses)
-
+    async def run(): ...
 
     asyncio.run(run())

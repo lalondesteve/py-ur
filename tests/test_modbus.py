@@ -25,7 +25,7 @@ async def test_connection():
 @pytest.mark.asyncio
 async def test_message():
     message = modbus.build_modbus_message(modbus.RegisterEnum.isPowerOnRobot)
-    r = await modbus.send_message(ip, message)
+    r = await modbus.send_message(ip=ip, message=message)
     assert r is not None
     assert r.register == modbus.RegisterEnum.isPowerOnRobot
     assert r.value in (0, 1)
@@ -35,10 +35,8 @@ async def test_message():
 async def test_write_message():
     value = random.randint(0, 255)
 
-    message = modbus.build_modbus_message(
-        modbus.RegisterEnum.register_128, value
-    )
-    r = await modbus.send_message(ip, message)
+    message = modbus.build_modbus_message(modbus.RegisterEnum.register_128, value)
+    r = await modbus.send_message(ip=ip, message=message)
     assert r is not None
     assert r.register == modbus.RegisterEnum.register_128
     assert r.value == value
@@ -54,7 +52,7 @@ async def test_batch_messages():
         (modbus.RegisterEnum.register_128, value),
     ]
     messages_bytes = [modbus.build_modbus_message(m) for m in messages]
-    r = await modbus.send_batch_messages(ip, messages_bytes)
+    r = await modbus.send_batch_messages(ip=ip, messages=messages_bytes)
     assert isinstance(r, list)
     assert isinstance(r[0], modbus.RegisterValue)
     assert r[-1].value == value
@@ -68,7 +66,7 @@ async def test_build_and_send():
         modbus.RegisterEnum.safetyMode,
         (modbus.RegisterEnum.register_128, value),
     ]
-    r = await modbus.build_and_send_messages(ip, messages)
+    r = await modbus.build_and_send_messages(ip=ip, messages=messages)
     assert isinstance(r, list)
     assert isinstance(r[0], modbus.RegisterValue)
     assert r[-1].value == value
@@ -80,7 +78,7 @@ async def test_build_send_and_parse():
         modbus.RegisterEnum.isPowerOnRobot,
         modbus.RegisterEnum.isEmergencyStopped,
     ]
-    responses = await modbus.build_and_send_messages(ip, messages)
+    responses = await modbus.build_and_send_messages(ip=ip, messages=messages)
     print("Responses", responses)
     assert responses[0].register == modbus.RegisterEnum.isPowerOnRobot
     assert responses[0].value in (0, 1)
