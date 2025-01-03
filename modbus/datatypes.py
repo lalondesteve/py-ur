@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Protocol
+from dataclasses import dataclass
 
 
 class Action(IntEnum):
@@ -23,6 +23,7 @@ register_dict = {f"register_{i}": i for i in range(128, 255)}
 GeneralPurposeRegister = IntEnum("GeneralPurposeRegister", register_dict)  # pyright: ignore
 
 
-class Register(Protocol):
+@dataclass
+class RegisterValue:
     name: str
     value: int
