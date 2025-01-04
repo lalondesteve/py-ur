@@ -9,7 +9,7 @@ on : [DashboardServer_e-Series_2022](https://s3-eu-west-1.amazonaws.com/ur-suppo
 
 Modbus Registers functions based
 on : [ModBus Server Data](https://s3-eu-west-1.amazonaws.com/ur-support-site/16377/ModBus%20Server%20Data.pdf)
-https://www.universal-robots.com/articles/ur/interface-communication/modbus-server/
+[and more info here]("https://www.universal-robots.com/articles/ur/interface-communication/modbus-server/")
 
 ## Modbus Register commands
 
@@ -40,11 +40,3 @@ https://www.universal-robots.com/articles/ur/interface-communication/modbus-serv
 > * 0x06: WRITE_SINGLE_REGISTER(write output register)
 > * 0x0F: WRITE_MULTIPLE_COILS (write multiple output bits)
 > * 0x10: WRITE_MULTIPLE_REGISTERS (write multiple output registers)
-
-## Dashboard commands
-
-| command                       | return value                                                                                                                                                       |                                                                                                                                                                                                                                description |
-|:------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <pre>load <program.urp></pre> | <pre>On success: "Loading program:<program.urp>" <br/>On Failure:<br/> - "File not found:<program.urp>" <br/> - "Error while loading program: <program.urp>"</pre> | Returns when both program and associated installation has loaded (or failed). The load command fails if the associated installation requires confirmation of safety. The return  value in this case will be 'Error while loading program'. |
-|
-| hello                         | world                                                                                                                                                              |                                                                                                                                                                                                                                     whynot |
