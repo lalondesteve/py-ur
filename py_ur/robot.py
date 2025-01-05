@@ -1,5 +1,6 @@
 import asyncio
 from typing import Callable
+from ipaddress import IPv4Address
 
 from . import dashboard
 from .dashboard import DashboardActionMessages, DashboardStatusMessages
@@ -14,26 +15,30 @@ logger = logging.getLogger(__name__)
 
 class Robot:
     def __init__(
-        self, ip: str = get_ursim_ip(), message_callback: Callable | None = None
+        self,
+        ip: str | IPv4Address = get_ursim_ip(),
+        message_callback: Callable | None = None,
     ):
+        if isinstance(ip, str):
+            ip = IPv4Address(ip)
         self.ip = ip
         self.message_callback = message_callback
         self.online = False
         self.modbus_online = False
         self.dashboard_online = False
-        self.modbus_status = dict()
-        self.dashboard_status = dict()
+        self.modbus_state = dict()
+        self.dashboard_state = dict()
         self.user_registers = dict()
 
     async def check_online(self):
         mw = dw = None
         try:
-            async for _, mw in modbus.connect(self.ip):
+            async for _, mw in modbus.connect(self.ip.compressed):
                 if mw is None:
                     self.modbus_online = False
                 else:
                     self.modbus_online = True
-            async for _, dw in dashboard.connect(self.ip):
+            async for _, dw in dashboard.connect(self.ip.compressed):
                 if dw is None:
                     self.dashboard_online = False
                 else:
@@ -45,26 +50,30 @@ class Robot:
             self.online = any([self.modbus_online, self.dashboard_online])
             logger.debug(f"online: {self.online}")
 
-    async def get_modbus_status(self):
+    async def get_modbus_state(self):
         responses = await modbus.build_and_send_messages(
-            ip=self.ip,
+            ip=self.ip.compressed,
             messages=[
                 m for m in modbus.RegisterEnum if not m.name.startswith("register_")
             ],
         )
-        self.modbus_status = {
+        self.modbus_state = {
             response.register: response.value for response in responses
         }
 
     async def get_register_status(self, registers: list[modbus.RegisterEnum]):
-        print(await modbus.build_and_send_messages(ip=self.ip, messages=registers))
+        print(
+            await modbus.build_and_send_messages(
+                ip=self.ip.compressed, messages=registers
+            )
+        )
 
-    async def get_dashboard_status(self):
+    async def get_dashboard_state(self):
         responses = [
-            await dashboard.send_batch_messages(ip=self.ip, messages=[m])
+            await dashboard.send_batch_messages(ip=self.ip.compressed, messages=[m])
             for m in DashboardStatusMessages
         ]
-        self.dashboard_status = {
+        self.dashboard_state = {
             response[0][0].name: self.filter_dashboard_responses(
                 response[0][1].decode()
             )
@@ -89,7 +98,7 @@ class Robot:
             if not isinstance(dashboard_message, list):
                 dashboard_message = [dashboard_message]
             response = await dashboard.send_batch_messages(
-                ip=self.ip, messages=dashboard_message
+                ip=self.ip.compressed, messages=dashboard_message
             )
             if callback and response:
                 callback(response)
@@ -98,7 +107,7 @@ class Robot:
             if not isinstance(modbus_message, list):
                 modbus_message = [modbus_message]
             response = await modbus.build_and_send_messages(
-                ip=self.ip, messages=modbus_message
+                ip=self.ip.compressed, messages=modbus_message
             )
             if callback and response:
                 callback(response)

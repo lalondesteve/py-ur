@@ -15,15 +15,15 @@ async def test_online(robot: Robot):
     assert robot.online is True
 
 
-async def test_status(robot: Robot):
-    await robot.get_modbus_status()
-    await robot.get_dashboard_status()
-    assert isinstance(robot.dashboard_status, dict)
-    print(robot.dashboard_status)
-    for k, v in robot.dashboard_status.items():
+async def test_state(robot: Robot):
+    await robot.get_modbus_state()
+    await robot.get_dashboard_state()
+    assert isinstance(robot.dashboard_state, dict)
+    print(robot.dashboard_state)
+    for k, v in robot.dashboard_state.items():
         assert isinstance(k, str)
         assert isinstance(v, str | bool)
-    for k, v in robot.modbus_status.items():
+    for k, v in robot.modbus_state.items():
         assert isinstance(k, modbus.RegisterEnum)
         assert isinstance(v, int)
 
