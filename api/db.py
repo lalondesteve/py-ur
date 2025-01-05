@@ -16,3 +16,10 @@ async def get_async_session(engine):
     async_session = async_sessionmaker(engine, expire_on_commit=False)
     async with async_session() as session:
         yield session
+
+
+async def drop_db(app):
+    async with app.ctx.DB.begin() as conn:
+        await conn.run_sync(RobotConfigModel.metadata.drop_all())
+        await conn.commit()
+        await add_db_engine(app)

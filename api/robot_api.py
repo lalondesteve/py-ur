@@ -103,3 +103,8 @@ async def update_robot(request, _id):
             return json(status=200, body=robot_from_db.model_dump(mode="json"))
 
     return json(status=404, body={"error": "Robot not created"})
+
+
+@robot_api.get("/<_id:int>/state")
+async def get_robot_state(request, _id):
+    return json(status=204, body={})

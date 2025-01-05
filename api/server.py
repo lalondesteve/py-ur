@@ -1,14 +1,16 @@
-from sanic import Sanic, response
+from sanic import Sanic, Blueprint
 from contextvars import ContextVar
 from sanic.log import logger
 
 from api.db import get_async_session, add_db_engine
 from api.robot_api import robot_api
+from api.routes import api
 
 
 def create_app():
     app = Sanic("py_ur")
-    app.blueprint(robot_api)
+    routes = Blueprint.group(api, robot_api)
+    app.blueprint(routes)
 
     _base_model_session_ctx = ContextVar("session")
 
@@ -28,13 +30,5 @@ def create_app():
             _base_model_session_ctx.reset(request.ctx.session_ctx_token)
         logger.debug(f"closing session {request.ctx.session_ctx_token=}")
         request.ctx.session = None
-
-    @app.route("/")
-    async def index(_):
-        return response.json({"response": "Hello world!"})
-
-    @app.route("/ping")
-    async def ping(_):
-        return response.json({"response": "pong"})
 
     return app
