@@ -11,14 +11,14 @@ ip = get_ursim_ip()
 
 @pytest.mark.asyncio
 async def test_connection():
-    async for r, w in modbus.connect(ip):
+    async with modbus.connect(ip) as (r, w):
         assert_type(r, asyncio.StreamReader)
         assert_type(w, asyncio.StreamWriter)
     with pytest.raises(ConnectionRefusedError):
-        async for _ in modbus.connect("127.0.0.1"):
+        async with modbus.connect("127.0.0.1"):
             pass
     with pytest.raises(asyncio.TimeoutError):
-        async for _ in modbus.connect("6.6.6.6"):
+        async with modbus.connect("6.6.6.6"):
             pass
 
 

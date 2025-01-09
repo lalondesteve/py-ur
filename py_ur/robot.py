@@ -33,12 +33,12 @@ class Robot:
     async def check_online(self):
         mw = dw = None
         try:
-            async for _, mw in modbus.connect(self.ip.compressed):
+            async with modbus.connect(self.ip.compressed) as (_, mw):
                 if mw is None:
                     self.modbus_online = False
                 else:
                     self.modbus_online = True
-            async for _, dw in dashboard.connect(self.ip.compressed):
+            async with dashboard.connect(self.ip.compressed) as (_, dw):
                 if dw is None:
                     self.dashboard_online = False
                 else:

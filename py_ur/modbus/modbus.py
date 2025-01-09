@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 import logging
 import struct
 from typing import Sequence
@@ -37,6 +38,7 @@ def build_modbus_message(register: int | tuple, value: int | None = None) -> byt
     )
 
 
+@asynccontextmanager
 async def connect(ip: str = IP):
     w = None
     try:
@@ -57,7 +59,7 @@ async def connect(ip: str = IP):
 
 async def send_message(message: bytes, ip: str = IP) -> RegisterValue | None:
     response = None
-    async for r, w in connect(ip):
+    async with connect(ip) as (r, w):
         w.write(message)
         await w.drain()
         response = parse_modbus_response(await r.read(1024))
@@ -68,7 +70,7 @@ async def send_batch_messages(
     messages: list[bytes], ip: str = IP
 ) -> list[RegisterValue]:
     responses: list[RegisterValue] = []
-    async for r, w in connect(ip):
+    async with connect(ip) as (r, w):
         for m in messages:
             w.write(m)
             await w.drain()

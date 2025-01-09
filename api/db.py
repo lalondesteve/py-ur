@@ -1,5 +1,4 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
 from .models import RobotConfigModel
 
 
@@ -20,6 +19,5 @@ async def get_async_session(engine):
 
 async def drop_db(app):
     async with app.ctx.DB.begin() as conn:
-        await conn.run_sync(RobotConfigModel.metadata.drop_all())
-        await conn.commit()
-        await add_db_engine(app)
+        await conn.run_sync(RobotConfigModel.metadata.drop_all)
+    await add_db_engine(app)

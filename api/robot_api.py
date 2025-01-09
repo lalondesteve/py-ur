@@ -105,6 +105,22 @@ async def update_robot(request, _id):
     return json(status=404, body={"error": "Robot not created"})
 
 
+@robot_api.delete("/<_id:int>")
+async def delete_robot(request: Request, _id):
+    try:
+        async for conn in request.ctx.session:
+            robot = sqlalchemy.delete(RobotConfigModel).where(
+                RobotConfigModel.id == _id
+            )
+            await conn.execute(robot)
+            await conn.commit()
+    except Exception as e:
+        logger.error(repr(e), e)
+        return json(status=400, body={"error": repr(e)})
+    else:
+        return json(status=200, body={"response": f"Robot with id {_id} deleted"})
+
+
 @robot_api.get("/<_id:int>/state")
 async def get_robot_state(request, _id):
     return json(status=204, body={})

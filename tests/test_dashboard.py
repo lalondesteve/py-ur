@@ -11,14 +11,14 @@ ip = get_ursim_ip()
 
 @pytest.mark.asyncio
 async def test_connection():
-    async for r, w in connect(ip):
+    async with connect(ip) as (r, w):
         assert_type(r, asyncio.StreamReader)
         assert w.is_closing() is False
     with pytest.raises(asyncio.TimeoutError):
-        async for _ in connect("6.6.6.6"):
+        async with connect("6.6.6.6"):
             pass
     with pytest.raises(ConnectionRefusedError):
-        async for _ in connect("127.0.0.1"):
+        async with connect("127.0.0.1"):
             pass
 
 
