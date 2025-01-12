@@ -14,19 +14,18 @@ repos:
       - id: ruff-format
         stages: [pre-commit]
 
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.391
-    hooks:
-      - id: pyright
-        entry: uv run pyright
-        stages: [pre-push]
-
   - repo: local
     hooks:
+      - id: pyright
+        name: pyright
+        language: system
+        entry: uv run pyright
+        stages: [pre-push]
+        pass_filenames: false
+
       - id: pytest
         name: pytest
-        entry: uv run pytest tests
+        entry: uv run pytest
         stages: [pre-push]
-        language: python
+        language: system
         pass_filenames: false
-        always_run: true
