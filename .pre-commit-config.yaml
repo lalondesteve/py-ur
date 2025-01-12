@@ -19,6 +19,7 @@ repos:
     rev: v1.1.391
     hooks:
       - id: pyright
+        entry: uv run pyright
 
   - repo: local
     hooks:
