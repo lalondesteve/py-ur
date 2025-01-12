@@ -1,4 +1,3 @@
-import asyncio
 from typing import Callable
 from ipaddress import IPv4Address
 
@@ -141,10 +140,3 @@ class Robot:
 
     async def pause(self):
         await self.send(dashboard_message=dashboard.DashboardActionMessages.pause)
-
-
-if __name__ == "__main__":
-
-    async def run(): ...
-
-    asyncio.run(run())
