@@ -3,6 +3,8 @@ from ipaddress import IPv4Address
 
 import logging
 import json
+
+from py_ur.modbus_datatypes import RegisterEnum
 from . import dashboard, modbus, DashboardActionMessages, DashboardStatusMessages
 
 from py_ur.utils import get_ursim_ip
@@ -23,8 +25,8 @@ class Robot:
         self.online = False
         self.modbus_online = False
         self.dashboard_online = False
-        self.modbus_state = dict()
-        self.dashboard_state = dict()
+        self.modbus_state: dict[RegisterEnum, int] = dict()
+        self.dashboard_state: dict[str, str] = dict()
         self.user_registers = dict()
 
     async def check_online(self):
@@ -131,10 +133,10 @@ class Robot:
         await self.send(dashboard_message=DashboardActionMessages.brake_release)
 
     async def play(self):
-        await self.send(dashboard_message=dashboard.DashboardActionMessages.play)
+        await self.send(dashboard_message=DashboardActionMessages.play)
 
     async def stop(self):
-        await self.send(dashboard_message=dashboard.DashboardActionMessages.stop)
+        await self.send(dashboard_message=DashboardActionMessages.stop)
 
     async def pause(self):
-        await self.send(dashboard_message=dashboard.DashboardActionMessages.pause)
+        await self.send(dashboard_message=DashboardActionMessages.pause)
