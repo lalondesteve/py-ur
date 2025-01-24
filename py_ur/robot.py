@@ -2,12 +2,12 @@ from typing import Callable
 from ipaddress import IPv4Address
 
 import py_ur.dashboard as dashboard
-from .dashboard import DashboardActionMessages, DashboardStatusMessages
+from py_ur.dashboard import DashboardActionMessages, DashboardStatusMessages
 import py_ur.modbus as modbus
 import logging
 import json
 
-from .utils import get_ursim_ip
+from py_ur.utils import get_ursim_ip
 
 logger = logging.getLogger(__name__)
 
