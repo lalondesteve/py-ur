@@ -1,6 +1,6 @@
 [project]
 name = "py_ur"
-version = "0.0.1a"
+version = "0.0.2a"
 description = "Python app to communicate with Universal Robot (tested with UR3, UR5)"
 readme = "README.md"
 requires-python = ">=3.12"

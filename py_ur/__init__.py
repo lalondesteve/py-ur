@@ -1,5 +1,4 @@
-from . import dashboard
-from . import modbus
+from . import dashboard, modbus
 from .robot import Robot
 from .utils import get_ursim_ip
 
