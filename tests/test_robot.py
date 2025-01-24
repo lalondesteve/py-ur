@@ -1,6 +1,6 @@
 from py_ur import dashboard
 from py_ur import modbus
-from py_ur import Robot
+from py_ur.robot import Robot
 import pytest
 
 
