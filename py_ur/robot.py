@@ -1,9 +1,9 @@
 from typing import Callable
 from ipaddress import IPv4Address
 
-from . import dashboard
+import py_ur.dashboard as dashboard
 from .dashboard import DashboardActionMessages, DashboardStatusMessages
-from . import modbus
+import py_ur.modbus as modbus
 import logging
 import json
 
