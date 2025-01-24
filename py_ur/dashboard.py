@@ -2,7 +2,7 @@ import asyncio
 from contextlib import asynccontextmanager
 import logging
 
-from .datatypes import DashboardStatusMessages, DashboardActionMessages
+from .dashboard_datatypes import DashboardStatusMessages, DashboardActionMessages
 
 logger = logging.getLogger(__name__)
 PORT = 29999

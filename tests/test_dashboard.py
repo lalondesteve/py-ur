@@ -3,8 +3,8 @@ from typing import assert_type
 import pytest
 
 from py_ur.utils import get_ursim_ip
-from py_ur.dashboard.datatypes import DashboardStatusMessages
-from py_ur.dashboard.dashboard import connect, send_message, send_batch_messages
+from py_ur import DashboardStatusMessages
+from py_ur.dashboard import connect, send_message, send_batch_messages
 
 ip = get_ursim_ip()
 

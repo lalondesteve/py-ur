@@ -3,8 +3,8 @@ from contextlib import asynccontextmanager
 import logging
 import struct
 from typing import Sequence
-from ..utils import get_ursim_ip
-from .datatypes import Action, RegisterEnum, RegisterValue
+from .utils import get_ursim_ip
+from .modbus_datatypes import Action, RegisterEnum, RegisterValue
 
 logger = logging.getLogger(__name__)
 PORT = 502

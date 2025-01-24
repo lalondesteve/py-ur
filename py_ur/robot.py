@@ -1,10 +1,9 @@
 from typing import Callable
 from ipaddress import IPv4Address
 
-import py_ur.dashboard as dashboard
-import py_ur.modbus as modbus
 import logging
 import json
+from . import dashboard, modbus, DashboardActionMessages, DashboardStatusMessages
 
 from py_ur.utils import get_ursim_ip
 
@@ -69,7 +68,7 @@ class Robot:
     async def get_dashboard_state(self):
         responses = [
             await dashboard.send_batch_messages(ip=self.ip.compressed, messages=[m])
-            for m in dashboard.DashboardStatusMessages
+            for m in DashboardStatusMessages
         ]
         self.dashboard_state = {
             response[0][0].name: self.filter_dashboard_responses(
@@ -84,11 +83,9 @@ class Robot:
         | modbus.RegisterEnum
         | tuple[modbus.RegisterEnum, int]
         | None = None,
-        dashboard_message: list[
-            dashboard.DashboardActionMessages | dashboard.DashboardStatusMessages
-        ]
-        | dashboard.DashboardActionMessages
-        | dashboard.DashboardStatusMessages
+        dashboard_message: list[DashboardActionMessages | DashboardStatusMessages]
+        | DashboardActionMessages
+        | DashboardStatusMessages
         | None = None,
         callback: Callable | None = None,
     ):
@@ -125,27 +122,19 @@ class Robot:
         return response
 
     async def power_on(self):
-        await self.send(dashboard_message=dashboard.DashboardActionMessages.power_on)
+        await self.send(dashboard_message=DashboardActionMessages.power_on)
 
     async def power_off(self):
-        await self.send(dashboard_message=dashboard.DashboardActionMessages.power_off)
+        await self.send(dashboard_message=DashboardActionMessages.power_off)
 
     async def brake_release(self):
-        await self.send(
-            dashboard_message=dashboard.DashboardActionMessages.brake_release
-        )
+        await self.send(dashboard_message=DashboardActionMessages.brake_release)
 
     async def play(self):
-        await self.send(
-            dashboard_message=dashboard.dashboard.DashboardActionMessages.play
-        )
+        await self.send(dashboard_message=dashboard.DashboardActionMessages.play)
 
     async def stop(self):
-        await self.send(
-            dashboard_message=dashboard.dashboard.DashboardActionMessages.stop
-        )
+        await self.send(dashboard_message=dashboard.DashboardActionMessages.stop)
 
     async def pause(self):
-        await self.send(
-            dashboard_message=dashboard.dashboard.DashboardActionMessages.pause
-        )
+        await self.send(dashboard_message=dashboard.DashboardActionMessages.pause)
