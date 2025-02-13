@@ -6,5 +6,5 @@ def get_ursim_ip():
         with open("config.yaml", "r") as f:
             conf = yaml.safe_load(f)
     except Exception:
-        return "100.82.150.95"
+        return "127.0.0.1"
     return conf["ursim_ip"]

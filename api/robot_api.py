@@ -92,7 +92,7 @@ async def update_robot(request, _id):
                 RobotConfigModel.id == _id
             )
             robot_from_db = RobotConfigFromDb.model_validate(
-                (await conn.execute(get_robot_from_db)).scalars().one()
+                (await conn.execute(get_robot_from_db)).scalar_one()
             )
 
     except Exception as e:
