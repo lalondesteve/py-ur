@@ -18,8 +18,6 @@ class Robot:
         ip: str | IPv4Address = get_ursim_ip(),
         message_callback: Callable | None = None,
     ):
-        if isinstance(ip, str):
-            ip = IPv4Address(ip)
         self.ip = ip
         self.message_callback = message_callback
         self.online = False
@@ -28,6 +26,17 @@ class Robot:
         self.modbus_state: dict[RegisterEnum, int] = dict()
         self.dashboard_state: dict[str, str] = dict()
         self.user_registers = dict()
+        self._ip: IPv4Address
+
+    @property
+    def ip(self):
+        return self._ip
+
+    @ip.setter
+    def ip(self, ip: str | IPv4Address):
+        if isinstance(ip, str):
+            ip = IPv4Address(ip)
+        self._ip = ip
 
     async def check_online(self):
         mw = dw = None
